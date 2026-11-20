@@ -1,0 +1,6 @@
+{
+  "min_requests": 100,
+  "max_p95_ttft_growth_pct": 20,
+  "max_throughput_drop_pct": 10,
+  "max_candidate_error_pct": 2
+}

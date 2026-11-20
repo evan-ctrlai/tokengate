@@ -1,0 +1,7 @@
+{
+  "workload": "synthetic-mixed-v1",
+  "scenarios": {
+    "concurrency-1": {"requests": 200, "failed": 0, "p95_ttft_ms": 81, "completed_per_second": 2.2},
+    "concurrency-16": {"requests": 200, "failed": 1, "p95_ttft_ms": 620, "completed_per_second": 16.2}
+  }
+}
