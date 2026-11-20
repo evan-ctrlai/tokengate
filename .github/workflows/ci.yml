@@ -21,9 +21,10 @@ jobs:
           go vet ./...
           go build -o bin/tokengate ./cmd/tokengate
           bash -n scripts/benchmark.sh
+          go run ./cmd/demo
       - name: Check original and imported fixtures
         run: |
-          mkdir reports
+          mkdir -p reports
           bin/tokengate -baseline examples/baseline.json -candidate examples/baseline.json -policy examples/policy.json -report reports/original-pass.json
           set +e
           bin/tokengate -baseline examples/baseline.json -candidate examples/candidate-regressed.json -policy examples/policy.json -report reports/original-block.json
