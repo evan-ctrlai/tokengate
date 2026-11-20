@@ -1,0 +1,21 @@
+{
+  "backend": "openai",
+  "burstiness": 1,
+  "concurrencies": [
+    1,
+    16
+  ],
+  "dataset": "random",
+  "endpoint": "/v1/completions",
+  "ignore_eos": true,
+  "input_tokens": 128,
+  "num_prompts": 200,
+  "output_tokens": 32,
+  "prefix_tokens": 0,
+  "range_ratio": 0.0,
+  "repeats": 3,
+  "request_rate": "inf",
+  "seed": 0,
+  "temperature": 0,
+  "warmup_requests": 100
+}
