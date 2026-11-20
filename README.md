@@ -28,6 +28,31 @@ go test ./...
 go vet ./...
 ```
 
-## Next milestone
+## Import a reproducible vLLM comparison
 
-Normalize output from a pinned vLLM benchmark version. Record hardware, model and runtime versions, workload fingerprint and repeat-run variability. Then publish one real-model comparison and make clear which claims it does and does not support. The current version **does not run inference or claim an observed model regression**.
+The importer supports the flat `vllm bench serve --save-result` summary from **vLLM 0.11.0**, with explicit TokenGate metadata. It preserves each concurrency/repeat independently and hashes every raw file. Three or more repeats and at least 100 requested samples per run are required. Missing/null metrics, mismatched metadata, unexpected scenarios, inconsistent throughput and incomplete evidence fail closed.
+
+```sh
+mkdir -p reports
+bin/tokengate import-vllm -manifest examples/vllm/baseline-manifest.json -out reports/baseline.json
+bin/tokengate import-vllm -manifest examples/vllm/candidate-manifest.json -out reports/candidate.json
+bin/tokengate -baseline reports/baseline.json -candidate reports/baseline.json -policy examples/policy.json -report reports/pass.json
+bin/tokengate -baseline reports/baseline.json -candidate reports/candidate.json -policy examples/policy.json -report reports/block.json
+# Last command deliberately exits 1: concurrency 16, repeat 2 regresses by 55%.
+```
+
+These are **hand-authored synthetic fixtures**, shaped like upstream summary output. No model was run. Five candidate repeats are healthy; one repeat blocks promotion. The JSON report retains the decision, exact input SHA-256 hashes, normalized data, raw hashes, provenance and policy. Output paths must be new; existing evidence is never overwritten. Reports are audit records, not signed attestations.
+
+For measured evidence, use the [benchmark recipe and methodology](docs/benchmarking.md). Release automation should require measured inputs:
+
+```sh
+bin/tokengate -baseline reports/measured-baseline.json -candidate reports/measured-candidate.json -policy examples/policy.json -require-measured -report reports/release-decision.json
+```
+
+`-require-measured` rejects synthetic fixtures and legacy summaries. A `measured` label is an operator declaration; TokenGate cannot establish that a model or claimed environment actually produced the files. Keep the raw files and logs with the report.
+
+## Validation
+
+The [GitHub Actions workflow](.github/workflows/ci.yml) builds, tests, vets and exercises original and imported pass/block paths without model access or Go module downloads. Actions themselves and Go setup need GitHub network access. It uploads synthetic decision reports. A green job validates the software and fixtures; it establishes no inference performance claim.
+
+The current implementation compares TTFT, successful requests/second and errors. It does not run inference by itself, measure quality, pool percentile samples, estimate statistical significance or establish production SLOs. The next evidence milestone is a controlled real-model comparison with retained raw results.

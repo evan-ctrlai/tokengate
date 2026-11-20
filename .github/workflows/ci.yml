@@ -1,0 +1,47 @@
+name: Offline gate checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Test, vet and build (no module network)
+        env:
+          GOPROXY: 'off'
+          GOSUMDB: 'off'
+        run: |
+          test -z "$(gofmt -l cmd)"
+          go test -count=1 ./...
+          go vet ./...
+          go build -o bin/tokengate ./cmd/tokengate
+          bash -n scripts/benchmark.sh
+      - name: Check original and imported fixtures
+        run: |
+          mkdir reports
+          bin/tokengate -baseline examples/baseline.json -candidate examples/baseline.json -policy examples/policy.json -report reports/original-pass.json
+          set +e
+          bin/tokengate -baseline examples/baseline.json -candidate examples/candidate-regressed.json -policy examples/policy.json -report reports/original-block.json
+          code=$?
+          set -e
+          test "$code" -eq 1
+          bin/tokengate import-vllm -manifest examples/vllm/baseline-manifest.json -out reports/baseline.json
+          bin/tokengate import-vllm -manifest examples/vllm/candidate-manifest.json -out reports/candidate.json
+          bin/tokengate -baseline reports/baseline.json -candidate reports/baseline.json -policy examples/policy.json -report reports/import-pass.json
+          set +e
+          bin/tokengate -baseline reports/baseline.json -candidate reports/candidate.json -policy examples/policy.json -report reports/import-block.json
+          code=$?
+          set -e
+          test "$code" -eq 1
+      - name: Preserve synthetic decision reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-gate-reports
+          path: reports/
+          if-no-files-found: warn

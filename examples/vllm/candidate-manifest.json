@@ -1,0 +1,49 @@
+{
+  "format": "vllm-bench-serve/0.11.0",
+  "kind": "synthetic",
+  "workload": "random-128-32-seed0-v1",
+  "contract": {
+    "model": "synthetic/model",
+    "model_revision": "fixture-only",
+    "tokenizer": "synthetic/model",
+    "tokenizer_revision": "fixture-only",
+    "hardware": "SYNTHETIC: no GPU or inference run",
+    "request_mix_sha256": "bf0740b198c5c75a557ed65f8609d6972316836421f62370b4e1b16979cbeee6",
+    "warmup": "SYNTHETIC: describes 100 warmup requests; none executed"
+  },
+  "runtime": "SYNTHETIC candidate; no inference executed",
+  "requests_per_run": 200,
+  "request_mix_file": "request-mix.json",
+  "runs": [
+    {
+      "file": "candidate-c1-r1.json",
+      "concurrency": 1,
+      "repeat": 1
+    },
+    {
+      "file": "candidate-c1-r2.json",
+      "concurrency": 1,
+      "repeat": 2
+    },
+    {
+      "file": "candidate-c1-r3.json",
+      "concurrency": 1,
+      "repeat": 3
+    },
+    {
+      "file": "candidate-c16-r1.json",
+      "concurrency": 16,
+      "repeat": 1
+    },
+    {
+      "file": "candidate-c16-r2.json",
+      "concurrency": 16,
+      "repeat": 2
+    },
+    {
+      "file": "candidate-c16-r3.json",
+      "concurrency": 16,
+      "repeat": 3
+    }
+  ]
+}
