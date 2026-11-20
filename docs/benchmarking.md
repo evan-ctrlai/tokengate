@@ -54,6 +54,6 @@ Inspect per-repeat p95, throughput and error counts. Report the min/max range an
 
 A passing decision means only that the declared inputs satisfy the configured thresholds. It does not establish causality, capacity planning, output quality, representative production traffic, end-to-end user experience or a production SLO. Hardware and workload metadata are attestations, not independently measured facts. Hashes detect changed bytes only when compared with a trusted retained copy; they do not authenticate provenance. Preserve raw results, both manifests, request plan, server/client logs, normalized summaries, policy, decision report and the TokenGate commit together. All `reports/` contents are ignored by Git by default.
 
-## Local validation status
+## Evidence status
 
-On the development desktop, Ubuntu 22.04 WSL exists but has neither `vllm` nor `torch`; Docker's Linux engine is stopped and no inference health endpoint responds on localhost:8000. No real-model benchmark was run. Installing a runtime, obtaining weights and provisioning a compatible inference server would exceed the no-new-setup experiment scope. The offline fixtures validate parsing, contracts and gate behavior only. GitHub CI execution can be verified after this branch is authorized and pushed.
+No real-model benchmark has been captured for this project. The offline fixtures validate parsing, contracts and gate behavior only. To add measured evidence, run the recipe on an existing compatible test server with vLLM 0.11.0 and pinned local model/tokenizer snapshots, then retain both capture directories and the release decision report. GitHub CI validates the software and synthetic fixtures; it does not run a model.
